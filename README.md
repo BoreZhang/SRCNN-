@@ -1,5 +1,5 @@
 # SRCNN
-Implementation of SRCNN in PyTorch.
+Implementation of SRCNN in PyTorch and add a new layer
 
 # Usage
 

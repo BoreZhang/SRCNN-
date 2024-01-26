@@ -1,3 +1,6 @@
+![abstract](https://github.com/BoreZhang/SRCNNplus/assets/149680474/e5e527d6-932e-41fa-bb49-b9f0458a8bb3)
+
+
 # Abstract
 This project implements a super-resolution method based on SRCNN, which improves the image reconstruction quality and speed by adding a convolutional layer on top of SRCNN. We use three public image datasets to train and test our model, and compare it with SRCNN and several other super-resolution methods. The experimental results show that our method outperforms SRCNN on both PSNR and SSIM metrics, and has faster inference speed. Our method can also handle different scaling factors, such as 2, 3, 4 and 8, and still maintain good performance at high scaling factors.
 

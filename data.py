@@ -3,45 +3,49 @@ from os.path import join
 
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
-from PIL import Image, ImageFilter
+from PIL import Image
 
 def is_image_file(filename):
     # Check if the file has an image extension
-    return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
+    return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg", ".bmp"])
 
 def load_img(filepath):
     # Load the image and convert it to YCbCr color space
     img = Image.open(filepath).convert('YCbCr')
-    y, _, _ = img.split()
-    return y
+    y, cb, cr = img.split()
+    return y, cb, cr
 
-CROP_SIZE = 32
+CROP_SIZE = 128  # Adjust this size based on your dataset and model requirements
 
 class DatasetFromFolder(Dataset):
-    def __init__(self, image_dir, zoom_factor):
+    def __init__(self, image_dir, zoom_factor, input_transform=None, target_transform=None):
         super(DatasetFromFolder, self).__init__()
         self.image_filenames = [join(image_dir, x) for x in listdir(image_dir) if is_image_file(x)]
-
-        crop_size = CROP_SIZE - (CROP_SIZE % zoom_factor) # Valid crop size
-        self.input_transform = transforms.Compose([transforms.CenterCrop(crop_size), # cropping the image
-                                      transforms.Resize(crop_size//zoom_factor),  # subsampling the image (half size)
-                                      transforms.Resize(crop_size, interpolation=Image.BICUBIC),  # bicubic upsampling to get back the original size 
-                                      transforms.ToTensor()])
-        self.target_transform = transforms.Compose([transforms.CenterCrop(crop_size), # since it's the target, we keep its original quality
-                                       transforms.ToTensor()])
+        self.zoom_factor = zoom_factor
+        self.input_transform = input_transform
+        self.target_transform = target_transform
+        self.cbcr_transform = transforms.Compose([
+            transforms.Resize((CROP_SIZE, CROP_SIZE)),  # Ensure Cb and Cr are the same size
+            transforms.ToTensor()
+        ])
 
     def __getitem__(self, index):
-        input = load_img(self.image_filenames[index])
-        target = input.copy()
+        y, cb, cr = load_img(self.image_filenames[index])
+        target_y = y.copy()
         
-        # Apply Gaussian blur to the input image
-        # input = input.filter(ImageFilter.GaussianBlur(1)) 
+        # Resize Y channel to fixed size
+        y = y.resize((CROP_SIZE, CROP_SIZE), Image.BICUBIC)
+        target_y = target_y.resize((CROP_SIZE, CROP_SIZE), Image.BICUBIC)
         
         # Apply input and target transformations
-        input = self.input_transform(input)
-        target = self.target_transform(target)
+        input_y = self.input_transform(y)
+        target_y = self.target_transform(target_y)
+        
+        # Transform Cb and Cr channels to tensors
+        cb = self.cbcr_transform(cb)
+        cr = self.cbcr_transform(cr)
 
-        return input, target
+        return input_y, target_y, cb, cr
 
     def __len__(self):
         return len(self.image_filenames)

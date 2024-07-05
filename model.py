@@ -1,19 +1,17 @@
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.nn.init as init
 
 class SRCNN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_channels=1):
         super(SRCNN, self).__init__()
-        self.conv1 = nn.Conv2d(num_channels, 64, kernel_size=9, padding=4)  # First convolutional layer
-        self.conv2 = nn.Conv2d(64, 32, kernel_size=1, padding=0)  # Second convolutional layer
-        self.conv3 = nn.Conv2d(32, 16, kernel_size=3, padding=1)  # Third convolutional layer
-        self.conv4 = nn.Conv2d(32, num_channels, kernel_size=5, padding=2)  # Fourth convolutional layer
-        
-    def forward(self, x):
-        out = F.relu(self.conv1(x))  # Apply ReLU activation to the output of the first convolutional layer
-        out = F.relu(self.conv2(out))  # Apply ReLU activation to the output of the second convolutional layer
-        out = F.relu(self.conv3(out))  # Apply ReLU activation to the output of the third convolutional layer
-        out = self.conv4(out)  # Output of the fourth convolutional layer
+        self.conv1 = nn.Conv2d(num_channels, 64, kernel_size=9, padding=4)
+        self.conv2 = nn.Conv2d(64, 32, kernel_size=5, padding=2)
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, padding=2)  # Corrected to have 32 output channels
+        self.conv4 = nn.Conv2d(32, 1, kernel_size=5, padding=2)  # Ensure the final layer outputs a single channel
 
-        return out
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
+        x = self.conv4(x)  # Ensure the channels match up here
+        return x

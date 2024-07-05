@@ -2,7 +2,7 @@
 
 
 # Abstract
-This project implements a super-resolution method based on SRCNN, which improves the image reconstruction quality and speed by adding a convolutional layer on top of SRCNN. We use three public image datasets to train and test our model, and compare it with SRCNN and several other super-resolution methods. The experimental results show that our method outperforms SRCNN on both PSNR and SSIM metrics, and has faster inference speed. Our method can also handle different scaling factors, such as 2, 3, 4 and 8, and still maintain good performance at high scaling factors.
+This project implements a super-resolution method based on SRCNN, which improves image reconstruction quality and speed by adding a convolutional layer on top of SRCNN. We use three public image datasets to train and test our model, comparing it with SRCNN and other super-resolution methods. Experimental results show that our method outperforms SRCNN on both PSNR and SSIM metrics, with faster inference speed. Our method can handle different scaling factors (2, 3, 4, and 8) and maintain good performance at high scaling factors.
 
 # Introduction
 Image super-resolution (SR) is a technique that reconstructs high-resolution (HR) images from low-resolution (LR) images, which has wide applications in many fields, such as medical imaging, satellite imaging, video surveillance, face recognition, etc. The main challenge of image SR is how to recover the lost high-frequency details in LR images, making the HR images both clear and realistic.
